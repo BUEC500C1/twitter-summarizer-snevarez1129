@@ -19,6 +19,8 @@ feels_like = ""
 actual_temp = ""
 pressure = ""
 humidity = ""
+forecast_time = []
+forecast_temp = []
 
 #Modular Funciton Definitions
 def download():
@@ -65,6 +67,131 @@ def read_weather(json_data):
     humidity = json_data['main']['humidity']
     return
 
+def get_temp_data(lat, lon):
+    global forecast_time
+    global forecast_temp
+    URL = "https://api.weather.gov/points/" + str(lat) + "," + str(lon)
+    response = requests.get(URL).json()
+    forecast_url = response['properties']['forecastHourly']
+    new_response = requests.get(forecast_url).json()
+    i = 0
+    while i < 24:
+        forecast_time.append(new_response['properties']['periods'][i]['startTime'])
+        forecast_temp.append(new_response['properties']['periods'][i]['temperature'])
+        i += 1
+    return
+
+def format_response(index):
+    data = {
+        'id': {
+            'name': name[index],
+            'iata_code': iata_code[index]
+        },
+        'coord': {
+            'latitude': latitude[index],
+            'longitude': longitude[index]
+        },
+        'forecast': [
+            {
+                'time': forecast_time[0],
+                'temp': forecast_temp[0]
+            },
+            {
+                'time': forecast_time[1],
+                'temp': forecast_temp[1]
+            },
+            {
+                'time': forecast_time[2],
+                'temp': forecast_temp[2]
+            },
+            {
+                'time': forecast_time[3],
+                'temp': forecast_temp[3]
+            },
+            {
+                'time': forecast_time[4],
+                'temp': forecast_temp[4]
+            },
+            {
+                'time': forecast_time[5],
+                'temp': forecast_temp[5]
+            },
+            {
+                'time': forecast_time[6],
+                'temp': forecast_temp[6]
+            },
+            {
+                'time': forecast_time[7],
+                'temp': forecast_temp[7]
+            },
+            {
+                'time': forecast_time[8],
+                'temp': forecast_temp[8]
+            },
+            {
+                'time': forecast_time[9],
+                'temp': forecast_temp[9]
+            },
+            {
+                'time': forecast_time[10],
+                'temp': forecast_temp[10]
+            },
+            {
+                'time': forecast_time[11],
+                'temp': forecast_temp[11]
+            },
+            {
+                'time': forecast_time[12],
+                'temp': forecast_temp[12]
+            },
+            {
+                'time': forecast_time[13],
+                'temp': forecast_temp[13]
+            },
+            {
+                'time': forecast_time[14],
+                'temp': forecast_temp[14]
+            },
+            {
+                'time': forecast_time[15],
+                'temp': forecast_temp[15]
+            },
+            {
+                'time': forecast_time[16],
+                'temp': forecast_temp[16]
+            },
+            {
+                'time': forecast_time[17],
+                'temp': forecast_temp[17]
+            },
+            {
+                'time': forecast_time[18],
+                'temp': forecast_temp[18]
+            },
+            {
+                'time': forecast_time[19],
+                'temp': forecast_temp[19]
+            },
+            {
+                'time': forecast_time[20],
+                'temp': forecast_temp[20]
+            },
+            {
+                'time': forecast_time[21],
+                'temp': forecast_temp[21]
+            },
+            {
+                'time': forecast_time[22],
+                'temp': forecast_temp[22]
+            },
+            {
+                'time': forecast_time[23],
+                'temp': forecast_temp[23]
+            }
+        ]
+    }
+    return data
+
 #API Class Definitions
 class Airports(Resource):
     def get(self, airport_code):
@@ -73,8 +200,9 @@ class Airports(Resource):
         index = get_data(airport_code) #get the coordinates of the airport
         res = get_weather(latitude[index], longitude[index]) #get weather based on coordinates using openweathermap api
         read_weather(res) #get the data we want from the api response
-        info = {iata_code[index]: [latitude[index], longitude[index]]}
-        return info, 201 #return data to the user
+        get_temp_data(latitude[index], longitude[index]) #get forecast for next 24hrs
+        data = format_response(index) #format api response
+        return data, 201 #return data to the user
 
 # class CurrentWeather(Resource):
 #     def get(self, lon, lat):
