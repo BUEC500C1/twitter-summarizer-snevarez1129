@@ -11,20 +11,27 @@ Finally, the API again uses latitude and longitude of the airport to call the Na
 
 ## Usage
 (1) Create Python Virtual Environment
+
 `python3 -m venv env`
+
 `source env/bin/activate`
 
 (2) Install Requirements
+
 `pip3 install -r requirements.txt`
 
 (3) Add API Keys - in the file api_dev.py, add your openweathermap API key to the variable API_KEY (line 15)
+
 `API_KEY = ''`
 
 (4) Start the Server
+
 `python3 api_dev.py`
 
 (5) Run the API either by IATA code or by airport name
+
 `http://localhost:5000/iata/<airport_code>`
+
 `http://localhost:5000/iata/<airport_name>`
 
 ## Response
